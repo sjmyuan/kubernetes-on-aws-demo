@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  K8VPC: 
+    Description: The VPC of kubernetes
+    Type: String
+  KeyPair: 
+    Description: The Key Pair of kubernetes
+    Type: String
+  K8Role: 
+    Description: The Role of kubernetes
+    Type: String
+Resources:
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Kubernetes SecurityGroup
+      SecurityGroupIngress:
+        - CidrIp: "0.0.0.0/0",
+          FromPort: 22,
+          IpProtocol: tcp,
+          ToPort: 22
+      VpcId:
+        Ref: K8VPC
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: K8Role
+  MasterInstance:
+    Type: AWS::EC2::Instance
+    ImageId: ami-0029fd6e
+    KeyName:
+      Ref: KeyPair
+    SecurityGroups:
+      - SecurityGroup
+    InstanceType: t2.micro
+    IamInstanceProfile: 
+      Ref: InstanceProfile
+    UserData:
+      Fn:Base64:
+        Fn:Join:
+          - ""
+            - "#!/bin/bash\n" 
+Outputs:
