@@ -9,3 +9,4 @@ spec:
     targetPort: 1080
   selector:
     run: http-proxy
+  type: LoadBalancer
